@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/redux/4.1.1/redux.min.js"></script>
+    </head>
+    <body>
+        <style>
+            .container{
+                border:5px solid black;
+                padding:10px;
+            }
+        </style>
+        <div id="red"></div>
+        <div id="black"></div>
+        <script>
+            //함수를 정해 리덕스의 스토어를 생성한다.
+            //window..... 해당 함수는 타임머신화 할 수 있다(debugger(리플레이로 함수 실행을 볼 수 있음)).
+            var store = Redux.createStore(
+                reducer,
+                window.__REDUX_DEVTOOLS_EXTENSION__ 
+                && window.__REDUX_DEVTOOLS_EXTENSION__()
+            );
+
+            //생성된 리듀서 함수
+            function reducer(state, action) {
+                //생성된 리듀서 함수에 코드를 작성한다.
+                var newState;
+                if(state === undefined) {
+                    newState = Object.assign({}, state, {backColor:"yellow",fontColor:'blue',border:'5px solid white'});
+                } else {
+                    newState = Object.assign({}, state, {backColor:action.backColor,fontColor:action.fontColor,border:action.border});
+                }
+                console.log('now State === ', newState, '\nnow action >>> ', action);
+                return newState;
+            }
+
+            function red() {
+                var state = store.getState();
+                console.log(state);
+                document.querySelector('#red').innerHTML = `
+                    <div class="container" style="background-color: ${state.backColor}; border: ${state.border}">
+                        <h1 style="color:${state.fontColor}">RED</h1>
+                        <button onclick="store.dispatch({type:'CHANGE-COLOR',backColor:'red',fontColor:'black',border:'5px solid black'})">click</button>
+                    </div>
+                `;
+            }
+            store.subscribe(red);
+            red();
+
+            function black() {
+                var state = store.getState();
+                console.log(state.backColor);
+                document.querySelector('#black').innerHTML = `
+                    <div class="container" style="background-color: ${state.backColor}; border: ${state.border}">
+                        <h1 style="color:${state.fontColor}">BLACK</h1>
+                        <button onclick="store.dispatch({type:'CHANGE-COLOR',backColor:'black',fontColor:'white',border:'5px solid red'})">click</button>
+                    </div>
+                `;
+            }
+            store.subscribe(black);
+            black();
+        </script>
+    </body>
+</html>
